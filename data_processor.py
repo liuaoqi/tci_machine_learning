@@ -12,45 +12,56 @@ import tensorflow as tf
 import os
 from os import path
 from wordcloud import WordCloud
-#import matplotlib.pyplot as plt
+from collections import Counter
 nltk.download('stopwords')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 filename = input ('please input name of the file you want to analyze:')
-comment = pandas.read_csv(filename)
+comment_table = pandas.read_csv(filename)
+
+
+# clean the comment by converting into letters only
 def comment_to_words(raw_comment):
+   '''
+   comment_to_words converts comment to letters and @ symbol only
+   '''
    letters_only = re.sub("[^a-zA-Z@]"," ", raw_comment)
    words = letters_only.lower().split()
    stops = set(stopwords.words("english"))
    meaningful_words = [w for w in words if not w in stops and not re.match ("^[@]",w) and not re.match("dealer",w)]
    return(" ".join(meaningful_words))
 
-comment['cleaned'] =comment['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x))
-#convert sentiment to binary
-comment['senti'] = comment['Sentiment'].apply(lambda x:0 if x == 'nagetive' else 1)
-all_text = ' '.join(comment['cleaned'])
+
+# store cleaned comment and converted sentiment into the comment table
+comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x))
+# negative = 0
+# neutral, positive = 1
+comment_table['senti'] = comment_table['Sentiment'].apply(lambda x:0 if x == 'negative' else 1)
+all_text = ' '.join(comment_table['cleaned'])
 words = all_text.split()
 
-from collections import Counter
+# generate the vocabulary list from the whole text
 counts = Counter(words)
 vocab = sorted(counts, key=counts.get, reverse=True)
 vocab_to_int = { word : i for i, word in enumerate(vocab, 1)}
 
+# generate the comment data represented with integers
 comment_ints = []
-for each in comment['cleaned']:
+for each in comment_table['cleaned']:
    comment_ints.append([vocab_to_int[word] for word in each.split()])
 
-labels = np.array([0 if each =='negative' else 1 for each in comment['Sentiment'][:]])
+labels = np.array([0 if each =='negative' else 1 for each in comment_table['Sentiment'][:]])
 
 comment_lens = Counter([len(x) for x in comment_ints])
 print('Zero-length reviews:{}'.format(comment_lens[0]))
 print("Maximum comment length: {}".format(max(comment_lens)))
 
-#comment_idx = [idx for idx, comment in enumerate(comment_ints) if len(comment) >0]
-#labels = labels[comment_idx]
-#comment = comment.ix[comment_idx]
-#comment_ints = [comment for comment in comment_ints if len(comment)>0]
+# comment_idx = [idx for idx, comment in enumerate(comment_ints) if len(comment) >0]
+# labels = labels[comment_idx]
+# comment_table = comment.ix[comment_idx]
+# comment_ints = [comment for comment in comment_ints if len(comment)>0]
 
+#
 seq_len =100
 features = np.zeros((len(comment_ints), seq_len), dtype=int)
 for i,row in enumerate(comment_ints):
@@ -120,7 +131,7 @@ def get_batches(x, y, batch_size=100):
     x, y = x[:n_batches*batch_size], y[:n_batches*batch_size]
     for ii in range(0, len(x), batch_size):
         yield x[ii:ii+batch_size], y[ii:ii+batch_size]
-print(comment)
+print(comment_table)
 print(len(train_x)+len(val_x))
 print(len(train_x)+len(val_x)+512-1)
 epochs = 10
@@ -179,5 +190,5 @@ test_pred_flat = (np.array(test_pred)).flatten()
 start_idx = len(train_x) + len(val_x)
 print(len(test_pred_flat))
 end_idx = start_idx + len(test_pred_flat)-1
-comment.loc[start_idx:end_idx,'predicted_sentiment'] = test_pred_flat 
-comment.to_csv('predictions.csv')
+comment_table.loc[start_idx:end_idx,'predicted_sentiment'] = test_pred_flat 
+comment_table.to_csv('predictions.csv')
