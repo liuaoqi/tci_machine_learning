@@ -24,7 +24,8 @@ custom_stop_words = ["dealer", "dealers"]
 # clean the special characters in the comments
 def comment_to_words(raw_comment):
    '''
-   PROBLEM: How to efficiently learn digits
+   PROBLEM: How to efficiently learn digits (interval)
+            Some data is not recognized (ex. currency)
    '''
    no_sp_char = re.sub("[^((\d)+.(\d)+)^\w\d%=^((\w)+\-(\w)+)]"," ", comments)
    items = no_sp_char.lower().split()
