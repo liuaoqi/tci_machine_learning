@@ -19,18 +19,23 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 filename = input ('please input name of the file you want to analyze:')
 comment_table = pandas.read_csv(filename)
 
+custom_stop_words = ["dealer", "dealers"]
 
-# clean the comment by converting into letters only
+# clean the special characters in the comments
 def comment_to_words(raw_comment):
    '''
-   comment_to_words converts comment to letters and @ symbol only
+   PROBLEM: How to efficiently learn digits
    '''
-   letters_only = re.sub("[^a-zA-Z@]"," ", raw_comment)
-   words = letters_only.lower().split()
+   no_sp_char = re.sub("[^((\d)+.(\d)+)^\w\d%=^((\w)+\-(\w)+)]"," ", comments)
+   items = no_sp_char.lower().split()
    stops = set(stopwords.words("english"))
-   meaningful_words = [w for w in words if not w in stops and not re.match ("^[@]",w) and not re.match("dealer",w)]
+   meaningful_terms = []
+   for w in items:
+      if w[-1] == ".":
+         w = w[:-1]
+      if w not in custom_stop_words:
+         meaningful_terms.append(w)
    return(" ".join(meaningful_words))
-
 
 # store cleaned comment and converted sentiment into the comment table
 comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x))
