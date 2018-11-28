@@ -35,7 +35,7 @@ def comment_to_words(raw_comment):
          w = w[:-1]
       if w not in custom_stop_words:
          meaningful_terms.append(w)
-   return(" ".join(meaningful_words))
+   return(" ".join(meaningful_terms))
 
 # store cleaned comment and converted sentiment into the comment table
 comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x))
