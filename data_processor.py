@@ -19,20 +19,37 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 filename = input ('please input name of the file you want to analyze:')
 comment_table = pandas.read_csv(filename)
 
-custom_stop_words = ["dealer", "dealers"]
+custom_stop_words,stops = ["dealer", "dealers"],set(stopwords.words("english"))
 
-# clean the special characters in the comments
-def comment_to_words(raw_comment):
-   no_sp_char = re.sub("[^((\d)*.?(\d)*%)^\w=^((\w)+\-(\w)+)]"," ", comments)
-   items = no_sp_char.lower().split()
-   stops = set(stopwords.words("english"))
-   meaningful_terms = []
-   for w in items:
-      if w[-1] == ".":
-         w = w[:-1]
-      if w not in custom_stop_words:
-         meaningful_terms.append(w)
-   return(" ".join(meaningful_terms))
+# filter the comments
+def comment_to_words(comments):
+   '''(str) -> str
+   Clean up the comment and keep only meaningful words'''
+   # remove special characters
+   terms = re.sub("[^0-9a-zA-Z&.\-%]", " ", comments)
+   meaningful_terms = terms.lower().split()
+   clean_comment(meaningful_terms)
+   return " ".join(meaningful_terms)
+
+def clean_comment(terms):
+   '''(list of str) -> None
+   Filter each string in the list of comments'''
+   i = 0
+   while i < len(terms):
+      curr = terms[i]
+      # remove invalid terms
+      if ((not bool(\
+         re.match("((\d+\.?\d+%)|([a-zA-Z]+(-?|&?)[a-zA-Z]*))",curr)))\
+          or (curr in custom_stop_words) or (curr in stops)):
+         terms.pop(i)
+         i = i - 1
+      # remove unfiltered periods
+      elif (curr[-1] == "."):
+         terms[i] = curr[:-1]
+      # convert percentage into float then round down
+      elif (curr[-1] == "%"):
+         terms[i] = str(round(float(curr[:-1])/100))
+      i += 1
 
 # store cleaned comment and converted sentiment into the comment table
 comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x))
