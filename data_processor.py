@@ -55,8 +55,8 @@ def clean_comment(terms):
 # convert each sentiment into corresponding integer
 def read_sent(sentiment):
    '''(str) -> int
-   Convert negative to 0, positive to 1, neutral to 2'''
-   result = 2
+   Convert negative to 0, positive to 1, neutral to 5'''
+   result = 5
    if sentiment == "negative":
       result = 0
    elif sentiment == "positive":
