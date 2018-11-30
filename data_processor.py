@@ -17,7 +17,7 @@ nltk.download('stopwords')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 filename = input ('please input name of the file you want to analyze:')
-comment_table, WORDS = pandas.read_csv(filename), []
+comment_table, words = pandas.read_csv(filename), []
 custom_stop_words,stops = ["dealer", "dealers"],set(stopwords.words("english"))
 
 # filter the comments
@@ -67,12 +67,12 @@ def read_sent(sentiment):
    return result
 
 # store cleaned comment and converted sentiment into the comment table
-comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x, WORDS))
+comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x, words))
 # negative is 0, positive is 1, neutral is 2
 comment_table['senti'] = comment_table['Sentiment'].apply(lambda x: read_sent(x))
 
 # generate the vocabulary list from the whole text
-counts = Counter(WORDS)
+counts = Counter(words)
 vocab = sorted(counts, key=counts.get, reverse=True)
 vocab_to_int = { word : i for i, word in enumerate(vocab, 1)}
 
