@@ -21,14 +21,14 @@ comment_table, WORDS = pandas.read_csv(filename), []
 custom_stop_words,stops = ["dealer", "dealers"],set(stopwords.words("english"))
 
 # filter the comments
-def comment_to_words(comments):
+def comment_to_words(comments, words):
    '''(str) -> str
    Clean up the comment and keep only meaningful words'''
    # remove special characters
-   terms = re.sub("[^0-9a-zA-Z&.\-%]", " ", comments)
+   terms = re.sub("[^0-9a-zA-Z&.%]", " ", comments)
    meaningful_terms = terms.lower().split()
    clean_comment(meaningful_terms)
-   WORDS += meaningful_terms
+   words += meaningful_terms
    return " ".join(meaningful_terms)
 
 def clean_comment(terms):
@@ -39,7 +39,7 @@ def clean_comment(terms):
       curr = terms[i]
       # remove invalid terms
       if ((not bool(\
-         re.match("((\d+\.?\d+%)|([a-zA-Z]+(-?|&?)[a-zA-Z]*))",curr)))\
+         re.match("((^\d+\.?\d+%$)|(^[0-9]*[a-zA-Z]+&?[a-zA-Z0-9]*$))",curr)))\
           or (curr in custom_stop_words) or (curr in stops)):
          terms.pop(i)
          i = i - 1
@@ -53,7 +53,7 @@ def clean_comment(terms):
      return None
 
 # store cleaned comment and converted sentiment into the comment table
-comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x))
+comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x, WORDS))
 # negative = 0
 # neutral, positive = 1
 comment_table['senti'] = comment_table['Sentiment'].apply(lambda x:0 if x == 'negative' else 1)
