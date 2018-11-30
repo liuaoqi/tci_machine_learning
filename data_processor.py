@@ -160,8 +160,7 @@ def get_batches(x, y, batch_size=100):
     for ii in range(0, len(x), batch_size):
         yield x[ii:ii+batch_size], y[ii:ii+batch_size]
 print(comment_table)
-print(len(train_x)+len(val_x))
-print(len(train_x)+len(val_x)+512-1)
+
 epochs = 10
 with graph.as_default():
     saver = tf.train.Saver()
