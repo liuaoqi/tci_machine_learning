@@ -18,7 +18,14 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 filename = input ('please input name of the file you want to analyze:')
 comment_table, words = pandas.read_csv(filename), []
-custom_stop_words,stops = ["dealer", "dealers"],set(stopwords.words("english"))
+custom_stop_words = ["dealer", "dealers", "dealership",\
+                     "will", "Note", "now", "last", "one", "service",\
+                    "manager", "area", "reviewed", "vehicle",\
+                    "customer", "customers", "discuss", "th",\
+                    "vs", "ytd", "review", "toyota", "hrs",\
+                    "per", "sent", "sales", "year",\
+                    "lexus", "parts", "target"]
+stops = set(stopwords.words("english"))
 
 # filter the comments
 def comment_to_words(comments, words):
