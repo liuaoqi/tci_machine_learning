@@ -25,7 +25,7 @@ def comment_to_words(comments, words):
    '''(str) -> str
    Clean up the comment and keep only meaningful words'''
    # remove special characters
-   terms = re.sub("[^0-9a-zA-Z&.%]", " ", comments)
+   terms = re.sub("[^0-9a-zA-Z&.,%]", " ", comments)
    meaningful_terms = terms.lower().split()
    clean_comment(meaningful_terms)
    words += meaningful_terms
@@ -39,16 +39,19 @@ def clean_comment(terms):
       curr = terms[i]
       # remove invalid terms
       if ((not bool(\
-         re.match("((^\d+\.?\d+%$)|(^[0-9]*[a-zA-Z]+&?[a-zA-Z0-9]*(.?)$))",curr)))\
+         re.match("((^\d+\.?\d+%$)|(^[0-9]*[a-zA-Z]+&?[a-zA-Z0-9]*\.?$))",curr)))\
           or (curr in custom_stop_words) or (curr in stops)):
          terms.pop(i)
          i = i - 1
       # remove unfiltered periods
-      elif (curr[-1] == "."):
+      elif (curr[-1] == "." or curr[-1] == ","):
          terms[i] = curr[:-1]
       # convert percentage into float then round down
       elif (curr[-1] == "%"):
          terms[i] = str(int(float(curr[:-1])/10))
+      else:
+         terms.pop(i)
+         i = i - 1
       i += 1
    return None
 
