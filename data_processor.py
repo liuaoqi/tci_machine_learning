@@ -48,7 +48,7 @@ def clean_comment(terms):
          terms[i] = curr[:-1]
       # convert percentage into float then round down
       elif (curr[-1] == "%"):
-         terms[i] = str(round(float(curr[:-1])/100))
+         terms[i] = str(int(float(curr[:-1])/10))
       i += 1
      return None
 
