@@ -50,7 +50,7 @@ def clean_comment(terms):
       elif (curr[-1] == "%"):
          terms[i] = str(int(float(curr[:-1])/10))
       i += 1
-     return None
+   return None
 
 # convert each sentiment into corresponding integer
 def read_sent(sentiment):
