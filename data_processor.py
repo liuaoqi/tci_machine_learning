@@ -52,11 +52,21 @@ def clean_comment(terms):
       i += 1
      return None
 
+# convert each sentiment into corresponding integer
+def read_sent(sentiment):
+   '''(str) -> int
+   Convert negative to 0, positive to 1, neutral to 2'''
+   result = 2
+   if sentiment == "negative":
+      result = 0
+   elif sentiment == "positive":
+      result = 1
+   return result
+
 # store cleaned comment and converted sentiment into the comment table
 comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x, WORDS))
-# negative = 0
-# neutral, positive = 1
-comment_table['senti'] = comment_table['Sentiment'].apply(lambda x:0 if x == 'negative' else 1)
+# negative is 0, positive is 1, neutral is 2
+comment_table['senti'] = comment_table['Sentiment'].apply(lambda x: read_sent(x))
 
 # generate the vocabulary list from the whole text
 counts = Counter(WORDS)
@@ -68,7 +78,7 @@ comment_ints = []
 for each in comment_table['cleaned']:
    comment_ints.append([vocab_to_int[word] for word in each.split()])
 
-labels = np.array([0 if each =='negative' else 1 for each in comment_table['Sentiment'][:]])
+labels = np.array([read_sent(each) for each in comment_table['Sentiment'][:]])
 
 comment_lens = Counter([len(x) for x in comment_ints])
 print('Zero-length reviews:{}'.format(comment_lens[0]))
