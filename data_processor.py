@@ -50,7 +50,7 @@ def clean_comment(terms):
       elif (curr[-1] == "%"):
          terms[i] = str(round(float(curr[:-1])/100))
       i += 1
-     return null
+     return None
 
 # store cleaned comment and converted sentiment into the comment table
 comment_table['cleaned'] =comment_table['DISCUSSION_POINTS__C'].apply(lambda x: comment_to_words(x))
