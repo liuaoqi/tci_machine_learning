@@ -39,7 +39,7 @@ def clean_comment(terms):
       curr = terms[i]
       # remove invalid terms
       if ((not bool(\
-         re.match("((^\d+\.?\d+%$)|(^[0-9]*[a-zA-Z]+&?[a-zA-Z0-9]*$))",curr)))\
+         re.match("((^\d+\.?\d+%$)|(^[0-9]*[a-zA-Z]+&?[a-zA-Z0-9]*(.?)$))",curr)))\
           or (curr in custom_stop_words) or (curr in stops)):
          terms.pop(i)
          i = i - 1
